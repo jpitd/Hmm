@@ -53,7 +53,7 @@ class Hmm:
             return backward_parameter
 
     def forward_backward(self, observation_que, time, state):
-        """该部分用于实现前向-后向方法求γ参数的值"""
+        """该部分用于实现前向-后向方法求γ参数的值，observation_que为需要的观测序列，time为γ参数中设置的时刻，state为time对应的状态"""
         observation_que1 = observation_que[0:time]  # 划分用于前向的观测序列
         observation_que2 = observation_que[time - 1:]  # 划分用于后向的观测序列
         forward_parameter = self.forward(observation_que1)  # 求前向参数
@@ -62,7 +62,8 @@ class Hmm:
                 np.dot(forward_parameter, backward_parameter.T))  # 求得γ参数
 
     def forward_backward_2(self, observation_que, time1, state1, time2, state2):
-        """该部分主要用于求解β参数"""
+        """该部分主要用于求解β参数，observation_que为需要的观测序列，time1为贝塔参数中设置的t时刻，state1为time1对应的状态
+        time2为贝塔参数中设置的t+1时刻，state2为time2对应的状态"""
         observation_que1 = observation_que[0:time1]  # 划分用于前向的观测序列
         observation_que2 = observation_que[time2 - 1:]  # 划分用于后向的观测序列
         forward_parameter = self.forward(observation_que1)  # 求前向参数
@@ -78,7 +79,7 @@ class Hmm:
         return [k / summary]  # 返回β参数
 
     def em_a(self, observation_que):
-        """该部分用于更新状态转移矩阵"""
+        """该部分用于更新状态转移矩阵，observation_que为需要的观测序列"""
         temporary_array = np.zeros([self.state_number, self.state_number],
                                    dtype=np.float64)  # 创造一个零时数组存储更新后的值
         """下面的循环用于更新状态转移矩阵，i循环矩阵的行，k循环矩阵的列，n循环时间"""
@@ -93,7 +94,7 @@ class Hmm:
         self.state_transition_matrix = temporary_array  # 将结果存入状态转移矩阵
 
     def em_b(self, observation_que):
-        """该部分用于更新状态生成矩阵"""
+        """该部分用于更新状态生成矩阵，observation_que为需要的观测序列"""
         temporary_array = np.zeros([self.state_number, self.observation_number],
                                    dtype=np.float64)  # 创造一个零时数组存储更新后的值
         """下面的循环用于更新状态生成矩阵，i循环矩阵的行，k循环矩阵的列，n循环时间"""
@@ -109,7 +110,7 @@ class Hmm:
         self.observation_matrix = temporary_array  # 将结果存入状态生成矩阵
 
     def em_pi(self, observation_que):
-        """该部分用于更新初始状态概率分布"""
+        """该部分用于更新初始状态概率分布，observation_que为需要的观测序列"""
         temporary_array = np.zeros([1, self.state_number])  # 创造一个零时数组存储更新后的值
         """下面的循环用于更新初始状态概率分布，i用于循环状态数"""
         for i in range(1, self.state_number + 1):
@@ -120,7 +121,7 @@ class Hmm:
         self.initial_state_possibility_matrix = temporary_array  # 将结果存入初始状态概率分布
 
     def approximate(self, observation_que):
-        """该部分用于近似求解观测序列对应的状态系列"""
+        """该部分用于近似求解观测序列对应的状态系列，observation_que为需要的观测序列"""
         a = []  # 定义空列表用于存储每时刻的状态
         """下面的循环用于求解每时刻的状态，i循环时间，k循环状态"""
         for i in range(1, len(observation_que) + 1):
@@ -135,7 +136,7 @@ class Hmm:
         return a
 
     def viterbi(self, observation_que):
-        """该部分实现了HMM的维特比算法"""
+        """该部分实现了HMM的维特比算法，observation_que为需要的观测序列"""
         a = np.zeros([self.state_number, len(observation_que)], dtype=np.int64)  # 定义零时数组存储每一步的转移节点
         b = (self.initial_state_possibility_matrix.T *
              self.observation_matrix[:, observation_que[0] - 1:observation_que[0]].T)  # 定义零时变量存储该时刻每个状态的概率最大值
